@@ -237,7 +237,7 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	z_rounded = (uint16_t *)malloc( size_int_arr );
 
 	int size_position = array_size * sizeof(float);
-	int size_color = array_size * sizeof(u_int8_t);
+	int size_color = array_size * sizeof(uint8_t);
 	
 	x = (float *)malloc( size_position );
    	y = (float *)malloc( size_position );
@@ -296,7 +296,7 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	// offile.open(mcode_file_name.c_str(), ios::trunc);
 	// if(offile.is_open()) { 
 		for(int i=0; i<array_size; i++){
-            // Morton code for mull points: 0b0000000000000000100011011011011011011011011011011011011011011011;
+            // Morton code for null points: 0b0000000000000000100011011011011011011011011011011011011011011011;
             uint64_t morton_code = generate_morton_code(x_rounded[i], y_rounded[i], z_rounded[i]); 
             //search for the above code in octree
             if(morton_code != 0b0000000000000000100011011011011011011011011011011011011011011011){
