@@ -431,6 +431,8 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	
 	// GPU process END----------------------------------------------------------------------------------------------------------------------------------------------------------------
 	//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+    double start3, end3; 
+    start3 = clock();
     
     // add into the octree 
     for(int i=0; i<array_size; i++){
@@ -464,7 +466,8 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
             }
         }    
     }		
-    
+    end3 = clock();
+    double time3 = (double)(end3 - start3);
 	free(x);
     free(y);
 	free(z);
@@ -486,7 +489,7 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
     endtotal = clock();
     double timetotal = (double)(endtotal - starttotal);
     
-    std::cout<<time1<<"\t"<<time2<<"\t"<<timetotal<<endl; 
+    std::cout<<time1<<"\t"<<time2<<"\t"<<time3<<"\t"<<timetotal<<endl; 
 
 	return EXIT_SUCCESS; 	
 }

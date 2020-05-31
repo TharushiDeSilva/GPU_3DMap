@@ -208,6 +208,9 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	//make_range_array(resolution, max_sensor_radius); 
 	int array_size = 640*480; 	 // this is constant for camera - indicates camera resolution 
     
+    double start1, end1; 
+    start1 = clock();
+    
 	double roll, pitch, yaw; 
 	tf::Quaternion quat;
     tf::quaternionMsgToTF(odom_message_std.pose.pose.orientation, quat);	
@@ -263,11 +266,15 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 		counter+=1; 
 	}
 	counter = 0; 
-  
-	//double time1 = (double)(end1 - start1);
-	// round_off_positional_coords(array_size, x, y, z, x_rounded, y_rounded, z_rounded,
-	// 								x_position, y_position, z_position, sin_alpha, sin_beta, sin_gamma, cos_alpha, cos_beta, cos_gamma);
-    
+    // double start1, end1; 
+    // start1 = clock();
+    end1 = clock();
+    double time1 = (double)(end1 - start1);
+
+    double start2, end2; 
+    start2 = clock();
+    // end1 = clock();
+    // double timetotal = (double)(end1 - start1);
     // generate integer array for floats
     for(int i=0; i<array_size; i++){
         if( (fabs(x[i]) < max_sensor_radius) and (fabs(y[i]) < max_sensor_radius) and (fabs(z[i]) < max_sensor_radius)){
@@ -289,6 +296,16 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 
         } 
     }
+
+    // double start2, end2; 
+    // start2 = clock();
+    end2 = clock();
+    double time2 = (double)(end2 - start2);
+
+    double start3, end3; 
+    start3 = clock();
+    // end2 = clock();
+    // double timetotal = (double)(end2 - start2);
 
     // insert into octree 
     for(int i=0; i<array_size; i++){
@@ -323,7 +340,12 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
                 //std::cout<<i<<"\t"<<unsigned(r[i])<<"\t"<<unsigned(g[i])<<"\t"<<unsigned(b[i])<<"\t"<<std::bitset<32>(value)<<std::endl;
             }
         }    
-    }				
+    }	
+    
+    // double start3, end3; 
+    // start3 = clock();
+    end3 = clock();
+    double time3 = (double)(end3 - start3);
 	
     free(x);
     free(y);
@@ -338,6 +360,6 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	
     endtotal = clock();
     double timetotal = (double)(endtotal - starttotal);
-    std::cout<<timetotal<<endl; 
+    std::cout<<time1<<"\t"<<time2<<"\t"<<time3<<"\t"<<timetotal<<endl;
 	return EXIT_SUCCESS; 	
 }

@@ -71,7 +71,12 @@ int main(int argc, char **argv){
         ros::spinOnce();      
         seq_num +=1; 
         pcl::PointCloud<pcl::PointXYZRGB> cloud_;
-
+        
+        double start4, end4; 
+        start4 = clock();
+        // end3 = clock();
+        // double time3 = (double)(end3 - start3);
+        
         boost::unordered::unordered_map<uint64_t, uint32_t>::iterator it;
         for (it=octree.begin(); it!=octree.end(); it++){
             uint64_t code = it->first; 
@@ -205,6 +210,12 @@ int main(int argc, char **argv){
     msg.header.stamp = ros::Time::now();
     msg.header.frame_id = "map"; 
     pub.publish (msg);  
+    
+    // double start4, end4; 
+    // start4 = clock();
+    end4 = clock();
+    double time4 = (double)(end4 - start4);
+    std::cout<<time4<<std::endl;
     
     }
     //ros::spin(); 
