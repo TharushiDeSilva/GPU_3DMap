@@ -27,6 +27,7 @@ static int counter =1;
 
 //int testmain(pcl::PointCloud<pcl::PointXYZRGB> point_cloud_std); 
 int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_message_std); 
+ 
 
 void synced_callback(const boost::shared_ptr<const sensor_msgs::PointCloud2>& input_cloud, const boost::shared_ptr<const nav_msgs::Odometry>& input_odom){
     counter +=1; 

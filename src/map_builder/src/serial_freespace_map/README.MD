@@ -1,2 +1,0 @@
-freespace only.
-no CUDA

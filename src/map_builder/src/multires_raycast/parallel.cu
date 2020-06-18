@@ -1008,19 +1008,27 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	temp_nodes = leaf_nodes; 
     
     std::string map_file_name = "octree_nodes.txt";
-	ofstream offile;
-	offile.open(map_file_name.c_str(), ios::trunc);
-	if(offile.is_open()) { 
+    //std::string floor_file_name = "nav_nodes.txt";
+    ofstream offile;    
+    //ofstream navfile; 
+
+    offile.open(map_file_name.c_str(), ios::trunc);
+    //navfile.open(floor_file_name.c_str(), ios::trunc);
+    
+	if(offile.is_open() /*&& navfile.is_open()*/) { 
 		while(!temp_nodes.empty()){
             current = temp_nodes.front(); 
             if(current->Occ > 0){
 				offile<<current->X<<"\t"<<current->Y<<"\t"<<current->Z<<"\t"<<unsigned(current->R)<<"\t"<<unsigned(current->G)<<"\t"<<unsigned(current->B)<<std::endl;  
-			}
+            }
+            /*if(current->Z == 0.075f){
+                navfile<<current->X<<"\t"<<current->Y<<"\t"<<current->Z<<"\t"<<signed(current->Occ)<<std::endl;
+            }*/
             temp_nodes.pop(); 
         }				
 	}
 	
-	offile.close();
+    offile.close();
 
     end5 = clock();
 	double time5 = (double)(end5 - start5);

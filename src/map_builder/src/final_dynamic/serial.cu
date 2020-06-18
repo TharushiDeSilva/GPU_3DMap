@@ -640,7 +640,7 @@ void generate_node_arrays(int size, float* x, float* y, float* z, float* x_camer
     }
 }
 
-boost::unordered::unordered_map<uint64_t, uint32_t> octree;
+extern boost::unordered::unordered_map<uint64_t, uint32_t> octree;
 
 float *x_end, *y_end, *z_end; // endpoints 
 static bool setup_grid = false; 

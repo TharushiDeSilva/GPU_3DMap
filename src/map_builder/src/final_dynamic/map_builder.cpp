@@ -25,7 +25,7 @@ using namespace std;
 using namespace pcl; 
 
 static int counter =1; 
-extern boost::unordered::unordered_map<uint64_t, uint32_t> octree;
+boost::unordered::unordered_map<uint64_t, uint32_t> octree;
 static int half_axis_length = 32768;
 static float resolution = 0.05f; 
 
@@ -43,10 +43,6 @@ void synced_callback(const boost::shared_ptr<const sensor_msgs::PointCloud2>& in
     cudamain(in_cloud_2, in_odom); 
 }
 
-const double map_resolution = 0.05; //octomap resolution = 5cm 
-const float base_height = -0.30f; 			// height of the navigation plane from the camera
-const float base_nav_height = base_height - map_resolution;
-
 int main(int argc, char **argv){
     int seq_num = 0; 
     ros::init(argc, argv, "color_pointcloud_sub");
@@ -54,12 +50,8 @@ int main(int argc, char **argv){
     ros::NodeHandle nh;  
     message_filters::Subscriber<sensor_msgs::PointCloud2> pointcloud_sub(nh, "/camera/depth_registered/points", 10); // queue size 
     message_filters::Subscriber<nav_msgs::Odometry> odom_sub(nh, "/odom", 10);   // queue size 
-    std::cout<<"initialized subscribers to point cloud and odometry"<<std::endl; 
-
-    typedef message_filters::sync_policies::ApproximateTime<sensor_msgs::PointCloud2, nav_msgs::Odometry> my_sync_policy; 
-    
-    message_filters::Synchronizer<my_sync_policy> sync(my_sync_policy(20), pointcloud_sub, odom_sub);
-    sync.registerCallback(boost::bind(&synced_callback, _1, _2));
+    message_filters::TimeSynchronizer<sensor_msgs::PointCloud2, nav_msgs::Odometry> sync(pointcloud_sub, odom_sub, 10); 
+    sync.registerCallback(boost::bind(&synced_callback, _1, _2)); 
     
     ros::Publisher pub = nh.advertise<sensor_msgs::PointCloud2> ("points2", 1, true);
     //ros::Publisher pub_grid = nh.advertise<sensor_msgs::PointCloud2> ("Obstacles", 1, true);
@@ -72,8 +64,9 @@ int main(int argc, char **argv){
         seq_num +=1; 
         pcl::PointCloud<pcl::PointXYZRGB> cloud_;
         
-        double start4, end4; 
-        start4 = clock();
+        double start7, end7; 
+        start7 = clock();
+        int map_size = octree.size(); 
         boost::unordered::unordered_map<uint64_t, uint32_t>::iterator it;
         for (it=octree.begin(); it!=octree.end(); it++){
             uint64_t code = it->first; 
@@ -212,9 +205,9 @@ int main(int argc, char **argv){
     msg.header.frame_id = "map"; 
     pub.publish (msg);  
     
-    end4 = clock();
-    double time4 = (double)(end4 - start4);
-    std::cout<<time4<<std::endl;
+    end7 = clock();
+    double time7 = (double)(end7 - start7);
+    //std::cout<<map_size<<"\t"<<time7<<std::endl;
     }
     //ros::spin(); 
     return 0; 

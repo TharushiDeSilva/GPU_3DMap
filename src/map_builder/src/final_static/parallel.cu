@@ -33,7 +33,7 @@ using namespace std;
 static int NUM_OF_BLOCKS = 1; 
 __device__ const int axis_length = 65536; // 2^16; 
 __device__ const int half_axis_length = 32768; 
-__device__ const float resolution = 0.05f; 	// Resolution of 5 cm
+__device__ const float resolution = 0.04f; 	// Resolution of 5 cm
 __device__ const float half_resolution = resolution/2; // the half of the resolution. this value is used in calculations 
  
 const float max_sensor_radius = 3.00f; 	// scan data further than this modulus value will not be considered. 
@@ -307,8 +307,8 @@ __global__ void decode_codes(uint64_t* mcode, uint32_t* value,
     occ_out[index] = o_final; 
     
 }
-
-boost::unordered::unordered_map<uint64_t, uint32_t> octree;
+int n=1; 
+extern boost::unordered::unordered_map<uint64_t, uint32_t> octree;
 
 int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_message_std){ 
     
@@ -317,9 +317,6 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	
 	//make_range_array(resolution, max_sensor_radius); 
 	int array_size = 640*480;  	 
-    
-    double start1, end1; 
-	start1 = clock();
     
     // convert quaternion orientation into roll, pitch, yaw representation 
 	//double roll, pitch, yaw;
@@ -364,7 +361,9 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	b = (uint8_t *)malloc( size_color );
     
     rgb = (uint32_t *)malloc( size_rgb );
-
+    
+    double start1, end1; 
+	start1 = clock();
 	// positional data vector generation 
 	for(sensor_msgs::PointCloud2ConstIterator<float> it(point_cloud_std, "x"); it!=it.end(); ++it){
 		y[counter] = it[0] * -1; 
@@ -489,7 +488,7 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
     endtotal = clock();
     double timetotal = (double)(endtotal - starttotal);
     
-    std::cout<<time1<<"\t"<<time2<<"\t"<<time3<<"\t"<<timetotal<<endl; 
+    std::cout<<n<<"\t"<<time1<<"\t"<<time2<<"\t"<<time3<<"\t"<<timetotal<<endl; n+=1; 
 
 	return EXIT_SUCCESS; 	
 }

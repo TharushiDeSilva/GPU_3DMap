@@ -1179,7 +1179,7 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	if(offile.is_open()) { 
 		while(!temp_nodes.empty()){
             current = temp_nodes.front(); 
-            if(current->Occ >0){
+            if(current->Occ > 0){
 				offile<<current->X<<"\t"<<current->Y<<"\t"<<current->Z<<"\t"<<unsigned(current->R)<<"\t"<<unsigned(current->G)<<"\t"<<unsigned(current->B)<<std::endl;  
 			}
             temp_nodes.pop(); 

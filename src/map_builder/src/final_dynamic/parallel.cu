@@ -647,13 +647,13 @@ __global__ void generate_codes(float* x, float* y, float* z, float* x_camera_arr
 
 }
 
-boost::unordered::unordered_map<uint64_t, uint32_t> octree;
+extern boost::unordered::unordered_map<uint64_t, uint32_t> octree;
 
 float *x_end, *y_end, *z_end; // endpoints 
 float *d_x_end, *d_y_end, *d_z_end;  //device arrays 
 static bool setup_grid = false;
 static bool end_freed = false; 
-
+int l = 1; 
 int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_message_std){ 
     
     double starttotal, endtotal; 
@@ -661,9 +661,6 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	
 	//make_range_array(resolution, max_sensor_radius); 
 	int array_size = 640*480;  	 
-    
-    double start1, end1; 
-	start1 = clock();
     
     // convert quaternion orientation into roll, pitch, yaw representation 
 	//double roll, pitch, yaw;
@@ -740,7 +737,8 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 
         setup_grid = true; // not to run this code again 
     }
-
+    double start1, end1; 
+	start1 = clock();
 	// positional data vector generation 
 	for(sensor_msgs::PointCloud2ConstIterator<float> it(point_cloud_std, "x"); it!=it.end(); ++it){
 		y[counter] = it[0] * -1; 
@@ -813,36 +811,6 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
     double start3, end3; 
     start3 = clock();
     // add into the octree 
-    for(int i=0; i<array_size; i++){
-        // Morton code for null points: 0b0000000000000000100011011011011011011011011011011011011011011011;
-        uint64_t morton_code = mcode_arr[i]; 
-        //search for the above code in octree
-        if(morton_code != 0b0000000000000000100011011011011011011011011011011011011011011011){
-            boost::unordered::unordered_map<uint64_t, uint32_t>::iterator itr;  // to find the key 
-            itr = octree.find(morton_code);
-            if (itr == octree.end()){
-                uint32_t value = rgb[i]; 
-                octree.insert(std::make_pair<uint64_t, uint32_t>(morton_code, value));
-                
-            }else{
-                uint32_t rgbo_map = (itr->second); 
-                uint32_t occ_old = rgbo_map & 0b00000000000000000000000000111111;
-                rgbo_map = rgb[i] & 0b11111111111111111111111100000000;             // this is the final variable 
-                
-                if(occ_old == 0b00000000000000000000000000001000){
-                    // previous value is unkown
-                    rgbo_map = rgbo_map | 0b00000000000000000000000000010001; 
-                }else if(occ_old < 0b00000000000000000000000000100000){
-                    // value less than 32. max occupancy 
-                    occ_old +=1; 
-                    rgbo_map = rgbo_map | occ_old; 
-                }else{
-                    // no use from this case
-                }
-                itr->second = rgbo_map; 
-            }
-        }    
-    }
 
     for(int i=0; i<max_free_voxel_count; i+=max_step_count){
         for(int j=0; j<max_step_count-2; j++){
@@ -862,9 +830,8 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
                     uint32_t rgbo_map = (itr->second); 
                     uint32_t occ_old = rgbo_map & 0b00000000000000000000000000111111;
                     rgbo_map = 0b00000000000000000000000000000000;             // this is the final variable 
-                    if(occ_old == 0b00000000000000000000000000001000){
-                        // previous value is unkown
-                        rgbo_map = rgbo_map | 0b00000000000000000000000000001111; 
+                    if(occ_old == 0b00000000000000000000000000010001){  // previous value is 17, reducing one will make it unknown
+                        rgbo_map = rgbo_map | 0b00000000000000000000000000001111; // so make it 15
                     }else if(occ_old > 0b00000000000000000000000000000000){
                         // value greater than 0. max free  
                         occ_old -=1; 
@@ -876,6 +843,35 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
             }     
         }
     }	
+    for(int i=0; i<array_size; i++){
+        // Morton code for null points: 0b0000000000000000100011011011011011011011011011011011011011011011;
+        uint64_t morton_code = mcode_arr[i]; 
+        //search for the above code in octree
+        if(morton_code != 0b0000000000000000100011011011011011011011011011011011011011011011){
+            boost::unordered::unordered_map<uint64_t, uint32_t>::iterator itr;  // to find the key 
+            itr = octree.find(morton_code);
+            if (itr == octree.end()){
+                uint32_t value = rgb[i]; 
+                octree.insert(std::make_pair<uint64_t, uint32_t>(morton_code, value));
+                
+            }else{
+                uint32_t rgbo_map = (itr->second); 
+                uint32_t occ_old = rgbo_map & 0b00000000000000000000000000111111;
+                rgbo_map = rgb[i] & 0b11111111111111111111111100000000;             // this is the final variable 
+                
+                if(occ_old == 0b00000000000000000000000000001100){  // previous value is 12, adding 3 will make it unknown 
+                    rgbo_map = rgbo_map | 0b00000000000000000000000000010001; // so make it 17
+                }else if(occ_old < 0b00000000000000000000000000100000){
+                    // value less than 32. max occupancy 
+                    occ_old +=4;                                        // obstacle nodes are more critical 
+                    rgbo_map = rgbo_map | occ_old; 
+                }else{
+                    // no use from this case
+                }
+                itr->second = rgbo_map; 
+            }
+        }    
+    }
     end3 = clock();
     double time3 = (double)(end3 - start3);
     
@@ -909,7 +905,7 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
     endtotal = clock();
     double timetotal = (double)(endtotal - starttotal);
     
-    std::cout<<time1<<"\t"<<time2<<"\t"<<time3<<"\t"<<timetotal<<endl; 
+    std::cout<<l<<"\t"<<time1<<"\t"<<time2<<"\t"<<time3<<"\t"<<timetotal<<endl; l+=1;
 
 	return EXIT_SUCCESS; 	
 }

@@ -4,6 +4,8 @@ FIND_PACKAGE(CUDA REQUIRED
 #PCL REQUIRED COMPONENTS common io
 )
 
+#add_compile_options(-std=c++11)
+
 find_package(catkin REQUIRED COMPONENTS
   pcl_conversions
   roscpp
@@ -30,111 +32,7 @@ include_directories(
 #add_definitions(${PCL_DEFINITIONS})
 
 #---------------------------------------------------------------------------------------
-# For ROS  CUDA template
 
-CUDA_ADD_LIBRARY(OneLib ${LIB_TYPE} src/roscuda_pointers/template.cu)
-
-ADD_EXECUTABLE(cuda_pointer_node src/roscuda_pointers/main.cpp)
-ADD_DEPENDENCIES(cuda_pointer_node OneLib)
-TARGET_LINK_LIBRARIES(cuda_pointer_node
-  ${catkin_LIBRARIES}
-  OneLib
-
-)
-
-#-----------------------------------------------------------------------------------------
-
-#For development node
-
-#CUDA_ADD_LIBRARY(TwoLib ${LIB_TYPE} src/development_node/devel.cu)
-
-#ADD_EXECUTABLE(devel_node src/development_node/devel.cpp)
-#ADD_DEPENDENCIES(devel_node TwoLib)
-#TARGET_LINK_LIBRARIES(devel_node
-#  ${catkin_LIBRARIES}
-#  TwoLib
-
-#  )
-
-#-----------------------------------------------------------------------------------------
-
-#For Parallel Map Building Node 
-
-CUDA_ADD_LIBRARY(ThreeLib ${LIB_TYPE} src/parallel_map_build/parallel.cu)
-
-ADD_EXECUTABLE(parallel_node src/parallel_map_build/parallel.cpp)
-ADD_DEPENDENCIES(parallel_node ThreeLib)
-TARGET_LINK_LIBRARIES(parallel_node
-  ${catkin_LIBRARIES}
-  ThreeLib
-
-)
-
-
-#-----------------------------------------------------------------------------------------
-
-#For Serial map building node 
-
-CUDA_ADD_LIBRARY(FourLib ${LIB_TYPE} src/serial_map_build/serial.cu)
-
-ADD_EXECUTABLE(serial_node src/serial_map_build/serial.cpp)
-ADD_DEPENDENCIES(serial_node FourLib)
-TARGET_LINK_LIBRARIES(serial_node
-  ${catkin_LIBRARIES}
-  FourLib
-
-)
-
-
-#-----------------------------------------------------------------------------------------
-
-#For PARALLEL FREESPACE model building node 
-
-CUDA_ADD_LIBRARY(FiveLib ${LIB_TYPE} src/parallel_freespace_map/freespace.cu)
-
-ADD_EXECUTABLE(freespace_node src/parallel_freespace_map/freespace.cpp)
-ADD_DEPENDENCIES(freespace_node FiveLib)
-TARGET_LINK_LIBRARIES(freespace_node
-  ${catkin_LIBRARIES}
-  FiveLib
-
-)
-
-
-#For Serial FREESPACE model building node 
-
-CUDA_ADD_LIBRARY(SixLib ${LIB_TYPE} src/serial_freespace_map/freespace.cu)
-
-ADD_EXECUTABLE(freespace_serial_node src/serial_freespace_map/freespace.cpp)
-ADD_DEPENDENCIES(freespace_serial_node SixLib)
-TARGET_LINK_LIBRARIES(freespace_serial_node
-  ${catkin_LIBRARIES}
-  SixLib
-
-)
-
-#For CUDA + Octree Obstacles only Mode 
-
-CUDA_ADD_LIBRARY(SevenLib ${LIB_TYPE} src/cuda_with_octree_parallel/devel.cu)
-
-ADD_EXECUTABLE(octree_parallel_node src/cuda_with_octree_parallel/devel.cpp)
-ADD_DEPENDENCIES(octree_parallel_node SevenLib)
-TARGET_LINK_LIBRARIES(octree_parallel_node
-  ${catkin_LIBRARIES}
-  SevenLib
-
-)
-
-#For CUDA + Octree Dynamic Object Model  
-
-CUDA_ADD_LIBRARY(EightLib ${LIB_TYPE} src/parallel_dynamic_model/dynamic_parallel.cu)
-
-ADD_EXECUTABLE(dynamic_parallel_node src/parallel_dynamic_model/dynamic_parallel.cpp)
-ADD_DEPENDENCIES(dynamic_parallel_node EightLib)
-TARGET_LINK_LIBRARIES(dynamic_parallel_node
-  ${catkin_LIBRARIES}
-  EightLib
-)
 
 # for models with multi-resolutional octrees  -------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
@@ -150,13 +48,83 @@ TARGET_LINK_LIBRARIES(multires_static_node
 )
 
 
-# multi-resolution octree, full environment model. to switch between parallel, and serial versions, change .cu file 
+# multi-resolution octree, full environment model with full raycasting. to switch between parallel, and serial versions, change .cu file 
 
-CUDA_ADD_LIBRARY(TenLib ${LIB_TYPE} src/multires_dynamic/parallel.cu)
+CUDA_ADD_LIBRARY(ElevenLib ${LIB_TYPE} src/multires_raycast/parallel.cu)
 
-ADD_EXECUTABLE(multires_dynamic_node src/multires_dynamic/map_builder.cpp)
-ADD_DEPENDENCIES(multires_dynamic_node TenLib)
-TARGET_LINK_LIBRARIES(multires_dynamic_node
+ADD_EXECUTABLE(multires_raycast_node src/multires_raycast/map_builder.cpp)
+ADD_DEPENDENCIES(multires_raycast_node ElevenLib)
+TARGET_LINK_LIBRARIES(multires_raycast_node
   ${catkin_LIBRARIES}
-  TenLib
+  ElevenLib
+)
+
+
+# -----------------------------------------------------------------------------------------------------------------
+# -------------------------- Morton code based implementation -----------------------------------------------------
+
+# morton code octree, static environmnt only. to switch between parallel, and serial versions, change .cu file 
+
+CUDA_ADD_LIBRARY(TweleveLib ${LIB_TYPE} src/mc_static/parallel.cu)
+
+ADD_EXECUTABLE(mc_static_node src/mc_static/map_builder.cpp)
+ADD_DEPENDENCIES(mc_static_node TweleveLib)
+TARGET_LINK_LIBRARIES(mc_static_node
+  ${catkin_LIBRARIES}
+  TweleveLib
+)
+
+# morton code octree, full environment. to switch between parallel, and serial versions, change .cu file 
+
+CUDA_ADD_LIBRARY(ThirteenLib ${LIB_TYPE} src/mc_raycast/parallel.cu)
+
+ADD_EXECUTABLE(mc_raycast_node src/mc_raycast/map_builder.cpp)
+ADD_DEPENDENCIES(mc_raycast_node ThirteenLib)
+TARGET_LINK_LIBRARIES(mc_raycast_node
+  ${catkin_LIBRARIES}
+  ThirteenLib
+)
+
+# direct memory access from octree --------------------------------------------------------
+
+# static environment 
+CUDA_ADD_LIBRARY(FourteenLib ${LIB_TYPE} src/final_static/parallel.cu)
+
+ADD_EXECUTABLE(final_static_node src/final_static/map_builder.cpp)
+ADD_DEPENDENCIES(final_static_node FourteenLib)
+TARGET_LINK_LIBRARIES(final_static_node
+  ${catkin_LIBRARIES}
+  FourteenLib
+)
+
+# dynamic environment 
+CUDA_ADD_LIBRARY(FifteenLib ${LIB_TYPE} src/final_dynamic/parallel.cu)
+
+ADD_EXECUTABLE(final_dynamic_node src/final_dynamic/map_builder.cpp)
+ADD_DEPENDENCIES(final_dynamic_node FifteenLib)
+TARGET_LINK_LIBRARIES(final_dynamic_node
+  ${catkin_LIBRARIES}
+  FifteenLib
+)
+
+
+# the evaluator node ---------------------------------------------------------------
+# dynamic environment 
+CUDA_ADD_LIBRARY(SixteenLib ${LIB_TYPE} src/testing/evaluator/dynamic_serial.cu)
+
+ADD_EXECUTABLE(eval_node src/evaluator/map_builder.cpp)
+ADD_DEPENDENCIES(eval_node SixteenLib)
+TARGET_LINK_LIBRARIES(eval_node
+  ${catkin_LIBRARIES}
+  SixteenLib
+)
+
+# compare the tree algorithms  
+CUDA_ADD_LIBRARY(SeventeenLib ${LIB_TYPE} src/testing/algo_comparison/comparison.cu)
+
+ADD_EXECUTABLE(comparison_node src/algo_comparison/comparison.cpp)
+ADD_DEPENDENCIES(comparison_node SeventeenLib)
+TARGET_LINK_LIBRARIES(comparison_node
+  ${catkin_LIBRARIES}
+  SeventeenLib
 )

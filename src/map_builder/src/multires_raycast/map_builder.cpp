@@ -76,11 +76,38 @@ int main(int argc, char **argv){
             // insert the points into a point cloud
             pcl::PointXYZRGB *pt;
             pt = new pcl::PointXYZRGB(uint8_t(r_map), uint8_t(g_map),uint8_t(b_map));
+            //pt = new pcl::PointXYZRGB(uint8_t(0), uint8_t(255),uint8_t(0));
             pt->x = x_map; pt->y = y_map; pt->z = z_map; 
             cloud_.points.push_back(*pt);
             delete pt; 
         }
         ifile.close(); 
+        
+       /*
+       ifstream ifile;
+        ifile.open ("nav_nodes.txt", ios::in);
+        float x_map, y_map, z_map;  
+        int occ; 
+        
+        pcl::PointCloud<pcl::PointXYZRGB> cloud_;  
+         
+        while(ifile >>x_map>>y_map>>z_map>>occ){
+            // insert the points into a point cloud
+            pcl::PointXYZRGB *pt;
+            if(occ==0){
+                pt = new pcl::PointXYZRGB(uint8_t(155), uint8_t(155),uint8_t(155));
+            }else if(occ >0){
+                pt = new pcl::PointXYZRGB(uint8_t(0), uint8_t(0),uint8_t(0));
+            }else{
+                pt = new pcl::PointXYZRGB(uint8_t(255), uint8_t(255),uint8_t(255));
+            }
+            
+            pt->x = x_map; pt->y = y_map; pt->z = z_map; 
+            cloud_.points.push_back(*pt);
+            delete pt; 
+        }
+        ifile.close(); 
+        */
         sensor_msgs::PointCloud2 msg;
         pcl::toROSMsg(cloud_, msg);  
           

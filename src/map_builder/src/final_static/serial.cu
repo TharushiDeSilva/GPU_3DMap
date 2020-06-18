@@ -27,11 +27,6 @@
 
 using namespace std; 
 
-// =========================================================================================================================
-// This class file is to transport into include directory after development 
-
-float res_list_5cm[] = {3276.80, 1638.40, 819.20, 409.60, 204.80, 102.40, 51.20, 25.60, 12.80, 6.40, 3.20, 1.60, 0.80, 0.40, 0.20, 0.10, 0.05, 0.025}; // in meters
-
 // ==============================================================================================================================
 int axis_length = 65536; // 2^16; 
 const int half_axis_length = 32768; 
@@ -199,7 +194,7 @@ inline uint32_t create_node_value(uint8_t r, uint8_t g, uint8_t b, int8_t occ){
     return result; 
 }
 
-boost::unordered::unordered_map<uint64_t, uint32_t> octree; 
+extern boost::unordered::unordered_map<uint64_t, uint32_t> octree; 
 
 int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_message_std){ 
 
@@ -227,7 +222,7 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
 	double cos_a = cos(yaw); 
 
 	int counter = 0; 
-	int effective_point_count = 0; 
+	
 	//declare the arrray sets before reading the point cloud values 
 	
 	float *x, *y, *z; // for allocating position values of the points 
@@ -361,5 +356,6 @@ int cudamain(sensor_msgs::PointCloud2 point_cloud_std, nav_msgs::Odometry odom_m
     endtotal = clock();
     double timetotal = (double)(endtotal - starttotal);
     std::cout<<time1<<"\t"<<time2<<"\t"<<time3<<"\t"<<timetotal<<endl;
+    //std::cout<<octree.size()<<endl;
 	return EXIT_SUCCESS; 	
 }

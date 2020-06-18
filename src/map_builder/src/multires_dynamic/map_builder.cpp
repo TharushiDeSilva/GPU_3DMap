@@ -81,6 +81,25 @@ int main(int argc, char **argv){
             delete pt; 
         }
         ifile.close(); 
+        
+       /*
+       ifstream ifile;
+        ifile.open ("octree_nodes.txt", ios::in);
+        float x_map, y_map, z_map;  
+        int r_map, g_map, b_map; 
+        
+        pcl::PointCloud<pcl::PointXYZRGB> cloud_;  
+         
+        while(ifile >>x_map>>y_map>>z_map>>r_map>>g_map>>b_map){
+            // insert the points into a point cloud
+            pcl::PointXYZRGB *pt;
+            pt = new pcl::PointXYZRGB(uint8_t(255), uint8_t(255),uint8_t(0));
+            pt->x = x_map; pt->y = y_map; pt->z = z_map; 
+            cloud_.points.push_back(*pt);
+            delete pt; 
+        }
+        ifile.close(); 
+        */
         sensor_msgs::PointCloud2 msg;
         pcl::toROSMsg(cloud_, msg);  
           
