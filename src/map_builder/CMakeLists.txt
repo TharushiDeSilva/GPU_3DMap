@@ -112,7 +112,7 @@ TARGET_LINK_LIBRARIES(final_dynamic_node
 # dynamic environment 
 CUDA_ADD_LIBRARY(SixteenLib ${LIB_TYPE} src/testing/evaluator/dynamic_serial.cu)
 
-ADD_EXECUTABLE(eval_node src/evaluator/map_builder.cpp)
+ADD_EXECUTABLE(eval_node src/testing/evaluator/map_builder.cpp)
 ADD_DEPENDENCIES(eval_node SixteenLib)
 TARGET_LINK_LIBRARIES(eval_node
   ${catkin_LIBRARIES}
@@ -122,7 +122,7 @@ TARGET_LINK_LIBRARIES(eval_node
 # compare the tree algorithms  
 CUDA_ADD_LIBRARY(SeventeenLib ${LIB_TYPE} src/testing/algo_comparison/comparison.cu)
 
-ADD_EXECUTABLE(comparison_node src/algo_comparison/comparison.cpp)
+ADD_EXECUTABLE(comparison_node src/testing/algo_comparison/comparison.cpp)
 ADD_DEPENDENCIES(comparison_node SeventeenLib)
 TARGET_LINK_LIBRARIES(comparison_node
   ${catkin_LIBRARIES}
