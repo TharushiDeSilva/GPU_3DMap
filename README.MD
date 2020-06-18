@@ -1,2 +1,1 @@
-ROS with cuda to increase performance of 3D map building process
-equivalent program to octomap 
+Using SIMD architecture to increase performance of 3D Occupancy Grid Map building process such as OctoMap
