@@ -1,6 +1,8 @@
 # GPU_3DMap
-GPU accelerated 3D map building system
+3D Occupancy grid map building for autonomous robots using SIMD processing
 
-Refer to Wiki Section: 
+Overview: 
+https://github.com/TharushiDeSilva/GPU_3DMap/wiki/
 
+Install and Run:
 https://github.com/TharushiDeSilva/GPU_3DMap/wiki#how-to-use
