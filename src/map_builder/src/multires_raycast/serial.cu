@@ -1,4 +1,8 @@
-// this program will detect dynamic objects in the octomap 
+//K. T. D. S. De Silva ---- University of Moratuwa 
+// serial processing module 
+// raycast based on obstacle points model of unknown environment 
+// traditional octree representation with multi resolutions 
+//-------------------------------------------------------------------------------------------------- 
 
 #include <iostream>
 #include <bits/stdc++.h> 

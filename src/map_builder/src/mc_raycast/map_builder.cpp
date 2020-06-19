@@ -1,5 +1,8 @@
-//This node is used to read data from a color octomap_msgs/Octomap, 
-//transform according to a given transformation and save in .ot format. 
+//K. T. D. S. De Silva ---- University of Moratuwa 
+// Main module 
+// full/dynamic model of unknown environment 
+// octree representation with morton codes 
+//-------------------------------------------------------------------------------------------------- 
 
 #include "iostream"
 #include "ros/ros.h"

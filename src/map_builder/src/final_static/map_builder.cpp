@@ -1,5 +1,7 @@
-//This node is used to read data from a color octomap_msgs/Octomap, 
-//transform according to a given transformation and save in .ot format. 
+//K. T. D. S. De Silva ---- University of Moratuwa 
+// main class 
+// Static/obstacle only model of unknown environment 
+//-------------------------------------------------------------------------------------------------- 
 
 #include "iostream"
 #include "ros/ros.h"

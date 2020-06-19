@@ -1,4 +1,6 @@
-// evaluate the data structures in morton code and octree
+//K. T. D. S. De Silva ---- University of Moratuwa 
+// comapare traditional octree and morton codes
+//---------------------------------------------------------------
 
 #include "iostream"
 #include "ros/ros.h"

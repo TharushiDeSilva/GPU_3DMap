@@ -1,7 +1,7 @@
+//K. T. D. S. De Silva ---- University of Moratuwa 
+// time testing of components
+//---------------------------------------------------------------
 
-// This is the real Hello World for CUDA!
-//It takes the string 'Hello', prints it, then passes it to cuda with an array of offsets
-// Then the offsets are added in parallel to produce the string world! 
 #include <iostream>
 #include <bits/stdc++.h> 
 #include <stdint.h>

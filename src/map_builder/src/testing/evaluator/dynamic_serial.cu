@@ -1,4 +1,6 @@
-// this program will detect dynamic objects in the octomap 
+//K. T. D. S. De Silva ---- University of Moratuwa 
+// time testing of components
+//---------------------------------------------------------------
 
 #include <iostream>
 #include <bits/stdc++.h> 

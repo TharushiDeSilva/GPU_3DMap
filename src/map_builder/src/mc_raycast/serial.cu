@@ -1,4 +1,8 @@
-// this program will detect dynamic objects in the octomap 
+//K. T. D. S. De Silva ---- University of Moratuwa 
+// serial programming module 
+// full/dynamic model of unknown environment 
+// octree representation with morton codes 
+//-------------------------------------------------------------------------------------------------- 
 
 #include <iostream>
 #include <bits/stdc++.h> 
